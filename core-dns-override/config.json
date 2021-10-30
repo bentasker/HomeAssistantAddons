@@ -36,5 +36,5 @@
     "share:rw",
     "backup:rw"
   ],
-  "journald": true,
+  "journald": true
 }
