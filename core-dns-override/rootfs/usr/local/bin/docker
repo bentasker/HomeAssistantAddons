@@ -1,0 +1,22 @@
+#!/usr/bin/with-contenv bashio
+# ==============================================================================
+# Home Assistant Community Add-on: SSH & Web Terminal
+# This script gives the user instructions on how to enable Docker access.
+# ==============================================================================
+bashio::log.yellow "PROTECTION MODE ENABLED!"
+bashio::log.yellow ""
+bashio::log.yellow "To be able to use this command, you'll need to disable"
+bashio::log.yellow "protection mode on this add-on. Without it, the add-on"
+bashio::log.yellow "is unable to access Docker."
+bashio::log.yellow ""
+bashio::log.yellow "Steps:"
+bashio::log.yellow " - Go to the Supervisor Panel."
+bashio::log.yellow " - Click on the SSH & Web Terminal add-on."
+bashio::log.yellow " - Set the 'Protection mode' switch to off."
+bashio::log.yellow " - Restart the add-on."
+bashio::log.yellow ""
+bashio::log.yellow "Access to Docker allows you to do really powerful things"
+bashio::log.yellow "including complete destruction of your system."
+bashio::log.yellow "Please, be sure you know what you are doing before enabling"
+bashio::log.yellow "this feature!"
+bashio::log.yellow ""
