@@ -79,6 +79,50 @@ This allows it to, once a minute:
 - Check whether the Cloudflare config is active
 - If it is, remove it, copy the new config up and force a restart of `coredns`
 
+The result is that the `coredns` config will then look more like
+
+```
+bash-5.1# cat /etc/corefile 
+.:53 {
+    log {
+        class error
+    }
+    errors
+    loop
+    
+    hosts /config/hosts {
+        fallthrough
+    }
+    template ANY AAAA local.hass.io hassio {
+        rcode NOERROR
+    }
+    mdns
+    forward .  dns://192.168.1.253  {
+        except local.hass.io
+        policy sequential
+        
+    }
+    
+    cache 600
+}
+
+.:5553 {
+    log {
+        class error
+    }
+    errors
+    
+    forward . tls://1.1.1.1 tls://1.0.0.1 {
+        tls_servername cloudflare-dns.com
+        except local.hass.io
+        
+    }
+    cache 600
+}
+
+```
+
+(Although still present in the config, the `:5553` section will no longer be used by the resolver listening on `53`)
 
 ----
 
