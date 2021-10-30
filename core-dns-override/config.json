@@ -6,7 +6,7 @@
   "url": "https://github.com/bentasker/HomeAssistantAddons/tree/master/core-dns-override",
   "advanced": true,
   "startup": "services",
-  "ingress": true,
+  "ingress": false,
   "ingress_port": 0,
   "ingress_stream": true,
   "panel_icon": "mdi:console",
