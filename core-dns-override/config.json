@@ -29,7 +29,7 @@
   "privileged": ["NET_ADMIN", "SYS_ADMIN", "SYS_RAWIO", "SYS_TIME", "SYS_NICE"],
   "devices": [],
   "map": [
-    "config:ro"
+    "config:rw"
   ],
   "journald": false
 }
