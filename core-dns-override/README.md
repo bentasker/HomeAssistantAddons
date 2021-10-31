@@ -215,12 +215,63 @@ This should be added as `dns-override-template` in your `config` directory:
 }
 
 ```
-Note that you must not remove the `:5553` server (see [#Notes](#Notes)) - 
+Note that you must not remove the `:5553` server (see [#Notes](#notes)) - 
 
 In the addon's configuration page, tick `use_dns_template` and restart the addon.
 
 Unfortunately, the template cannot be provided via the configuration page because [HomeAssistant's YAML handling appears to be broken](https://github.com/bentasker/HomeAssistantAddons/commit/a34fb242599c25458094bec3cddccb37f351c2a8).
 
-If you've ticked the box and the config file doesn't exist, the default behaviour of patching existing config will be used.
+If you've ticked the box and the config file doesn't exist, the default behaviour of patching existing config will be used, and an error will be logged
 
-Note: if you wish to switch back to using the patching method, after unticking the box you need to trigger a restart of the DNS container (or just restart the whole box).
+```
+[12:19:19] ERROR: /config/dns-override-template does not exist - will patch existing file instead
+```
+
+Note: if you wish to switch back to using the patching method, after unticking the `use_dns_templatew` option you need to trigger a restart of the DNS container (or just restart the whole system).
+
+----
+
+## Loglines
+
+The following loglines may appear in your logs:
+
+### Informational
+
+```
+INFO: Launched
+```
+Just the addon confirming it's started successfully
+
+
+```
+INFO: Changes detected - overwriting DNS Config
+```
+This is normally a routine entry - `coredns`'s config had changed away from the desired one, so was overridden.
+
+If you see lots of these in close succession, it suggests the DNS container might be crashing out and restarting, which will need further investigation.
+
+
+### Errors
+
+```
+ERROR: Unable to access docker
+```
+Logged at startup if it's not possible to communicate with Docker.
+
+Most likely cause is that you forgot to disable protection mode - disable it in the Addon's config page and then restart the addon.
+
+
+```
+ERROR: Did you forget to disable protection mode?
+```
+Logged as a result of not being able to communicate with docker. This will be logged periodically to improve the chances of you noticing it in your system logs.
+
+Disable protection mode and restart the add-on
+
+
+```
+ERROR: /config/dns-override-template does not exist - will patch existing file instead
+```
+You've enabled `use_dns_template` but the configuration file could not be found. SSH onto your HomeAssistant box and create the [config file](#using-a-template), or disable `use_dns_template`.
+
+In the meantime, the default patching mode will be used.
