@@ -58,12 +58,14 @@ INTERVAL="`bashio::config 'interval'`"
 CONTAINER_NAME=`bashio::config dns_container`
 
 
-
+bashio::log.info "Launched"
 while true
 do
     if [ "$FAIL" == "0" ]
     then
         fetch_and_check
+    else
+        bashio::log.error "Did you forget to disable protection mode?"    
     fi
     sleep $INTERVAL
 done
