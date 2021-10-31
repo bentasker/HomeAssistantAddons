@@ -149,6 +149,15 @@ Once installed, click in and choose
 
 ----
 
+### Notes
+
+The config section relating to port `5553` must be left in place.
+
+It's declared as an ingress port for the DNS container, so if it isn't actively listening the check [here](https://github.com/home-assistant/supervisor/blob/main/supervisor/addons/addon.py#L479) will fail, and `supervisor` will restart the container.
+
+
+
+----
 ### TODO
 
 There are a number of improvements that can be made
