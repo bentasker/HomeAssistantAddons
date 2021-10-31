@@ -20,7 +20,7 @@ function make_and_push(){
         # take a copy as our "last"
         mv new last
     else
-        docker cp template $CONTAINER_NAME:/etc/corefile
+        docker cp $MODE $CONTAINER_NAME:/etc/corefile
     fi
     # Now restart coredns
     docker exec $CONTAINER_NAME pkill coredns
@@ -29,11 +29,16 @@ function make_and_push(){
 function fetch_and_check(){
     docker cp $CONTAINER_NAME:/etc/corefile ./current
     
-    if [ `cat template | wc -l` -lt 1 ]
+    if [ "$USE_TEMPLATE" == "true" ]
     then
-        COMP_FILE="last"
+        COMP_FILE="/config/dns-override-template"
+        if [ ! -f "$COMP_FILE" ]
+        then
+            bashio::log.error "/config/dns-override-template does not exist - will patch existing file instead"
+            COMP_FILE="last"
+        fi
     else
-        COMP_FILE="template"
+        COMP_FILE="last"
     fi
     
     if [ -f $COMP_FILE ]
@@ -73,9 +78,7 @@ fi
 # Get config
 INTERVAL="`bashio::config 'interval'`"
 CONTAINER_NAME=`bashio::config dns_container`
-
-# Write the configured template out to a file
-bashio::config dns_template > template
+USE_TEMPLATE=`bashio::config use_dns_template`
 
 bashio::log.info "Launched"
 while true
