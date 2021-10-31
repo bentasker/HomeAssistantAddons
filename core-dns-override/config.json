@@ -31,5 +31,13 @@
   "map": [
     "config:rw"
   ],
-  "journald": false
+  "journald": false,
+  "options" : {
+    "interval": 60,
+    "dns_container" : "hassio_dns"
+  },
+  "schema" : {
+    "interval" : "int",
+    "dns_container" : "str"
+  }
 }

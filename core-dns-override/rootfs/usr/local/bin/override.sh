@@ -1,8 +1,9 @@
 #!/usr/bin/with-contenv bashio
 
-CONTAINER_NAME=hassio_dns
-INTERVAL=60
+#CONTAINER_NAME=hassio_dns
+#INTERVAL=60
 
+CONFIG_PATH=/data/options.json
 
 function make_and_push(){
     # Strip direction to the fallback
@@ -51,6 +52,11 @@ then
     FAIL=1
     # We don't exit here, because supervisor would only restart us
 fi
+
+# Get config
+INTERVAL="`bashio::config 'interval'`"
+CONTAINER_NAME=`bashio::config dns_container`
+
 
 
 while true
