@@ -34,9 +34,23 @@ function fetch_and_check(){
     fi
 }
 
+# Catch an easy oversight
+FAIL=0
+docker ps 2>&1 > /dev/null
+if [ ! "$?" == "0" ]
+then
+    echo "Unable to access docker"
+    echo "Did you forget to disable protection mode?"
+    FAIL=1
+    # We don't exit here, because supervisor would only restart us
+fi
+
 
 while true
 do
-    fetch_and_check
+    if [ "$FAIL" == "0" ]
+    then
+        fetch_and_check
+    fi
     sleep $INTERVAL
 done
