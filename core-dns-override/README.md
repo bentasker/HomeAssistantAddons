@@ -6,7 +6,7 @@ The following routes of installing HomeAssistant:
 - HomeAssistant OS
 - Supervised
 
-Both contain a significant, and poorly documented flaw in their DNS setup.
+Both contain a significant, and [poorly documented flaw](https://github.com/home-assistant/home-assistant.io/issues/19511) in their DNS setup.
 
 When installing using these methods, a container `hassio_dns` is run, running a `coredns` install.
 
@@ -53,9 +53,11 @@ There are a couple of issues with this
 
 - If the DHCP/Owner configured DNS server (`192.168.1.253`) responds with `REFUSED`, `SERVFAIL` or `NXDOMAIN` the query will be retried via Cloudflare
 - Behaviour has been observed where it then won't switch back to local DNS for later queries
+- Where queries are sent to CF, local DNS names may be leaked
+- HomeAssistant users have, in effect, been signed up to [this](https://developers.cloudflare.com/1.1.1.1/privacy/public-dns-resolver) without their knowledge
 - Health check probes will be sent to cloudflare every 5 minutes
 
-The latter is particularly problematic, because if healthchecks fail, they are retried at smaller and smaller intervals. So HomeAssistant users who have blocked `1.1.1.1:853` outbound will find their HomeAssistant installer flinging packets at it.
+The latter is particularly problematic, because if healthchecks fail, they are retried at smaller and smaller intervals. So HomeAssistant users who have blocked `1.1.1.1:853` outbound will find their [HomeAssistant installation flinging packets at it](https://github.com/home-assistant/plugin-dns/pull/56#issuecomment-928967969).
 
 ----
 
@@ -64,6 +66,10 @@ The latter is particularly problematic, because if healthchecks fail, they are r
 This has been reported upstream, and [Pull Requests have been made](https://github.com/home-assistant/plugin-dns/pull/56), but have been [roundly rejected](https://github.com/home-assistant/plugin-dns/pull/56#issuecomment-929700917).
 
 The pro-offered solution of running a container installation isn't *really* a solution, given it entirely ignores the reasons that people want HA-OS.
+
+Issues have been raised and [closed](https://github.com/home-assistant/supervisor/issues/1877) on some extremely spurious grounds.
+
+Unfortunately, despite this being a clear issue with HomeAssistant, it is not going to get addressed in the short-term: the devs are neither willing to do the work, or accept PRs from people who have.
 
 ----
 
