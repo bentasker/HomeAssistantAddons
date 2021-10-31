@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bashio
 
 CONTAINER_NAME=hassio_dns
 INTERVAL=60
