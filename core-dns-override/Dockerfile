@@ -8,26 +8,10 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 # Add env
 ENV TERM="xterm-256color"
 
-# Copy Python requirements file
-COPY requirements.txt /tmp/
 
 # Setup base
 ARG BUILD_ARCH=amd64
-# hadolint ignore=DL3003
 RUN apk add --no-cache docker
-        
-RUN apk add --no-cache \
-        ack=3.5.0-r1 \
-        git=2.32.0-r0 \
-        sudo=1.9.7_p1-r1 \
-        wget=1.21.1-r1 \
-        zip=3.0-r9
-        
-RUN curl -L -s -o /usr/bin/ha \
-        "https://github.com/home-assistant/cli/releases/download/4.12.3/ha_${BUILD_ARCH}"
-    
-RUN chmod a+x /usr/bin/ha 
-
     
 RUN cp /usr/bin/docker /usr/local/bin/.undocked \
     \
