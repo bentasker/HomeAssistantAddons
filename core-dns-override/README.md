@@ -219,7 +219,8 @@ Note that you must not remove the `:5553` server (see [#Notes](#Notes)) -
 
 In the addon's configuration page, tick `use_dns_template` and restart the addon.
 
-Unfortunately, the template cannot be provided via the configuration page because [HomeAssistant's YAML handling appears to be broken]()
+Unfortunately, the template cannot be provided via the configuration page because [HomeAssistant's YAML handling appears to be broken](https://github.com/bentasker/HomeAssistantAddons/commit/a34fb242599c25458094bec3cddccb37f351c2a8).
 
 If you've ticked the box and the config file doesn't exist, the default behaviour of patching existing config will be used.
 
+Note: if you wish to switch back to using the patching method, after unticking the box you need to trigger a restart of the DNS container (or just restart the whole box).
