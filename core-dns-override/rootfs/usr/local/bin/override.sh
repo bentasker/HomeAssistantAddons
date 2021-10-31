@@ -95,7 +95,7 @@ function check_supervisor_dns(){
         return
     fi
     
-    grep -E "^([0-9,\.]+) $UPDATE_DOMAIN\$" hosts 2>&1 >/dev/null
+    grep -E "^([0-9,\.]+)[[:space:]]+$UPDATE_DOMAIN" hosts 2>&1 >/dev/null
     if [ ! "$?" == "0" ]
     then
         # Update it
