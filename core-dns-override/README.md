@@ -231,6 +231,21 @@ Note: if you wish to switch back to using the patching method, after unticking t
 
 ----
 
+# Blocking Supervisor updates
+
+Supervisor autoupdates and sometimes breaks otherwise stable installs.
+
+There is currently no official way to prevent this, so the addon includes functionality to [prevent Superviser updates](https://github.com/bentasker/HomeAssistantAddons/issues/1) by interfering with Superviser's ability to check for new versions.
+
+To enable, tick `block_supervisor_updates` in the configuration and restart the add-on.
+
+This will cause it to update `/etc/hosts` in supervisor in order to blackhole the domain `version.home-assistant.io`.
+
+When you're ready to install updates, untick the box and restart the addon - it'll remove the blackhole and you should be able to proceed.
+
+
+----
+
 ## Loglines
 
 The following loglines may appear in your logs:

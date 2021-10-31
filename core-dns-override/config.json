@@ -35,11 +35,19 @@
   "options" : {
     "interval": 60,
     "dns_container" : "hassio_dns",
-    "use_dns_template" : false
+    "use_dns_template" : false,
+    "block_supervisor_updates" : false,
+    "supervisor_container" : "hassio_supervisor",
+    "block_domain" : "version.home-assistant.io",
+    "block_dest": "127.0.0.12"
   },
   "schema" : {
     "interval" : "int",
     "dns_container" : "str",
-    "use_dns_template" : "bool?"
+    "use_dns_template" : "bool?",
+    "block_supervisor_updates" : "bool?",
+    "supervisor_container" : "str",
+    "block_domain" : "str",
+    "block_dest": "str"    
   }
 }
