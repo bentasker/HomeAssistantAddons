@@ -5,6 +5,17 @@
 
 CONFIG_PATH=/data/options.json
 
+function dump_curr_state(){
+    # Implemented for https://github.com/bentasker/HomeAssistantAddons/issues/2
+    INSTANCE=$1
+    CFILE=$2
+    
+    bashio::log.info "Dumping current $CFILE"
+    docker exec $INSTANCE cat $CFILE
+}
+
+
+
 function make_and_push(){
 
     MODE=$1
@@ -22,6 +33,10 @@ function make_and_push(){
     else
         docker cp $MODE $CONTAINER_NAME:/etc/corefile
     fi
+    
+    bashio::log.info "Changes pushed"
+    dump_curr_state $CONTAINER_NAME /etc/corefile
+    
     # Now restart coredns
     docker exec $CONTAINER_NAME pkill coredns
 }
@@ -48,6 +63,7 @@ function fetch_and_check(){
         then
             # Files differ
             bashio::log.info "Changes detected - overwriting DNS Config"
+            dump_curr_state $CONTAINER_NAME /etc/corefile
             make_and_push $COMP_FILE
         fi
     else
@@ -65,7 +81,6 @@ function check_supervisor_dns(){
     # https://github.com/bentasker/HomeAssistantAddons/issues/1
     #
 
-    SUPERVISOR=`bashio::config supervisor_container`
     UPDATE_DOMAIN=`bashio::config block_domain`
     BLOCK_IP=`bashio::config block_dest`
     
@@ -90,6 +105,8 @@ function check_supervisor_dns(){
             docker exec hassio_supervisor bash -c "cat /etc/hosts.tmp > /etc/hosts"
             docker exec hassio_supervisor bash -c "rm -f /etc/hosts.tmp"
             rm hosts_new
+            bashio::log.info "Changes pushed"
+            dump_curr_state $SUPERVISOR /etc/hosts
         fi
         rm hosts
         return
@@ -101,8 +118,8 @@ function check_supervisor_dns(){
         # Update it
         bashio::log.info "Changes detected - overwriting Supervisor /etc/hosts"
         docker exec hassio_supervisor bash -c "echo '$BLOCK_IP    $UPDATE_DOMAIN' | tee -a /etc/hosts" 
-        # Docker won't let us do this:
-        #docker cp hosts $SUPERVISOR:/etc/hosts
+        bashio::log.info "Changes pushed"
+        dump_curr_state $SUPERVISOR /etc/hosts
     fi
     rm hosts
 }
@@ -123,10 +140,16 @@ then
     # We don't exit here, because supervisor would only restart us
 fi
 
+#
 # Get config
 INTERVAL="`bashio::config 'interval'`"
 CONTAINER_NAME=`bashio::config dns_container`
 USE_TEMPLATE=`bashio::config use_dns_template`
+SUPERVISOR=`bashio::config supervisor_container`
+
+bashio::log.info "Starting"
+dump_curr_state $SUPERVISOR /etc/hosts
+dump_curr_state $CONTAINER_NAME /etc/corefile
 
 bashio::log.info "Launched"
 while true
