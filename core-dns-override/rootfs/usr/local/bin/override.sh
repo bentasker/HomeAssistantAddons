@@ -6,35 +6,52 @@
 CONFIG_PATH=/data/options.json
 
 function make_and_push(){
-    # Strip direction to the fallback
-    #
-    # Also, turn off health checks - it's unneeded traffic, this isn't a kubernetes cluster
-    cat current | sed 's~dns://127.0.0.1:5553~~g' | sed 's~fallback REFUSED.*~~g' | sed 's~health_check .*~~' > new
-    docker cp new $CONTAINER_NAME:/etc/corefile
-    
-    # take a copy as our "last"
-    mv new last
-    rm current
-    
+
+    MODE=$1
+
+    if [ "$MODE" == "last" ]
+    then
+        # Strip direction to the fallback
+        #
+        # Also, turn off health checks - it's unneeded traffic, this isn't a kubernetes cluster
+        cat current | sed 's~dns://127.0.0.1:5553~~g' | sed 's~fallback REFUSED.*~~g' | sed 's~health_check .*~~' > new
+        docker cp new $CONTAINER_NAME:/etc/corefile
+        
+        # take a copy as our "last"
+        mv new last
+    else
+        docker cp template $CONTAINER_NAME:/etc/corefile
+    fi
     # Now restart coredns
     docker exec $CONTAINER_NAME pkill coredns
 }
 
 function fetch_and_check(){
     docker cp $CONTAINER_NAME:/etc/corefile ./current
-    if [ -f last ]
+    
+    if [ `cat template | wc -l` -lt 1 ]
     then
-        diff -s current last > /dev/null
+        COMP_FILE="last"
+    else
+        COMP_FILE="template"
+    fi
+    
+    if [ -f $COMP_FILE ]
+    then
+        diff -s current $COMP_FILE > /dev/null
         if [ ! "$?" == "0" ]
         then
             # Files differ
             bashio::log.info "Changes detected - overwriting DNS Config"
-            make_and_push
+            make_and_push $COMP_FILE
         fi
     else
         # We don't have a copy of the last change
-        make_and_push
+        make_and_push $COMP_FILE
     fi
+
+    # Tidy up
+    rm current
 }
 
 
@@ -57,6 +74,8 @@ fi
 INTERVAL="`bashio::config 'interval'`"
 CONTAINER_NAME=`bashio::config dns_container`
 
+# Write the configured template out to a file
+bashio::config dns_template > template
 
 bashio::log.info "Launched"
 while true

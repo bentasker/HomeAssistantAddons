@@ -34,10 +34,12 @@
   "journald": false,
   "options" : {
     "interval": 60,
-    "dns_container" : "hassio_dns"
+    "dns_container" : "hassio_dns",
+    "dns_template" : ""
   },
   "schema" : {
     "interval" : "int",
-    "dns_container" : "str"
+    "dns_container" : "str",
+    "dns_template" : "str"
   }
 }
