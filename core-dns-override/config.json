@@ -34,6 +34,7 @@
   "journald": false,
   "options" : {
     "interval": 60,
+    "log_changes": true,
     "dns_container" : "hassio_dns",
     "use_dns_template" : false,
     "block_supervisor_updates" : false,
@@ -43,6 +44,7 @@
   },
   "schema" : {
     "interval" : "int",
+    "log_changes": "bool?",
     "dns_container" : "str",
     "use_dns_template" : "bool?",
     "block_supervisor_updates" : "bool?",

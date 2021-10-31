@@ -10,8 +10,11 @@ function dump_curr_state(){
     INSTANCE=$1
     CFILE=$2
     
-    bashio::log.info "Dumping current $CFILE"
-    docker exec $INSTANCE cat $CFILE
+    if [ `bashio::config log_changes` == "true" ]
+    then
+        bashio::log.info "Dumping current $CFILE"
+        docker exec $INSTANCE cat $CFILE
+    fi
 }
 
 
