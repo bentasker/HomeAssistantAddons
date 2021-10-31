@@ -1,7 +1,8 @@
-#!/usr/bin/env bashio
+#!/usr/bin/with-contenv bashio
 
 CONTAINER_NAME=hassio_dns
 INTERVAL=60
+
 
 function make_and_push(){
     # Strip direction to the fallback
@@ -26,6 +27,7 @@ function fetch_and_check(){
         if [ ! "$?" == "0" ]
         then
             # Files differ
+            bashio::log.info "Changes detected - overwriting DNS Config"
             make_and_push
         fi
     else
@@ -34,13 +36,18 @@ function fetch_and_check(){
     fi
 }
 
+
+# bashio uses set -e by default, we do not want that
+# we're specifically testing things that may fail
+set +e
+
 # Catch an easy oversight
 FAIL=0
-docker ps 2>&1 > /dev/null
+docker ps 2>&1 >/dev/null
 if [ ! "$?" == "0" ]
 then
-    echo "Unable to access docker"
-    echo "Did you forget to disable protection mode?"
+    bashio::log.error "Unable to access docker"
+    bashio::log.error "Did you forget to disable protection mode?"
     FAIL=1
     # We don't exit here, because supervisor would only restart us
 fi
