@@ -102,11 +102,11 @@ Although artificially blocked here, that clearly translates to very slow respons
 
 With Cloudflare unblocked, we can see that it's still significantly slower than local
 
-![Average response time](imgs/Screenshot_20211106_125449.png)
+![Average response time](imgs/Screenshot_20211106_145548.png)
 
 CF's responses take around 500ms longer than the local DNS server - that's an additional half second lag when running scripts/automations which require an external name to be (re)resolved.
 
-A ping to `1.1.1.1` shows a RTT of 10 - 13ms, so the additional latency is probably attributable to the overheads of DoT, although it may also be increased by the inter-coreDNS communication (there's a UDP communication between the server block on `:53` and the one on `:5553`).
+A ping to `1.1.1.1` shows a RTT of 10 - 13ms, so the additional latency is probably attributable to the overheads of DoT. Although the user's observed latency may also be increased by the inter-coreDNS communication (there's a UDP communication between the server block on `:53` and the one on `:5553`), it's not included in the graphed statistic.
 
 Whatever the cause, where queries are passed to Cloudflare erroneously, latency is *25x* higher, even before the impact of passing local names to Cloudflare is taken into account.
 
@@ -114,7 +114,7 @@ Whatever the cause, where queries are passed to Cloudflare erroneously, latency 
 
 Looking at healthcheck failure rates, we can see how the coredns configuration inadvertantly contributes to the packet storms some users have complained of
 
-![Healthcheck failure rates](imgs/Screenshot_20211106_125449.png)
+![Healthcheck failure rates](imgs/Screenshot_20211106_150804.png)
 
 We can see lots and lots of failures against `127.0.0.1:5553`, despite it not being supposed to be used as an actual upstream.
 
