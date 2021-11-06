@@ -100,3 +100,43 @@ We can also graph out reponse times for that fallback, and see that it is *very*
 
 Although artificially blocked here, that clearly translates to very slow response times if there are issues between HomeAssistant and Cloudflare - essentially blocking execution of automations etc.
 
+With Cloudflare unblocked, we can see that it's still significantly slower than local
+
+![Average response time](imgs/Screenshot_20211106_125449.png)
+
+CF's responses take around 500ms longer than the local DNS server - that's an additional half second lag when running scripts/automations which require an external name to be (re)resolved.
+
+A ping to `1.1.1.1` shows a RTT of 10 - 13ms, so the additional latency is probably attributable to the overheads of DoT, although it may also be increased by the inter-coreDNS communication (there's a UDP communication between the server block on `:53` and the one on `:5553`).
+
+Whatever the cause, where queries are passed to Cloudflare erroneously, latency is *25x* higher, even before the impact of passing local names to Cloudflare is taken into account.
+
+### Impact of Healthchecks
+
+Looking at healthcheck failure rates, we can see how the coredns configuration inadvertantly contributes to the packet storms some users have complained of
+
+![Healthcheck failure rates](imgs/Screenshot_20211106_125449.png)
+
+We can see lots and lots of failures against `127.0.0.1:5553`, despite it not being supposed to be used as an actual upstream.
+
+The reason is that the default HomeAssistant config contains this:
+
+```
+        forward . dns://192.168.1.253 dns://127.0.0.1:5553 {
+            except local.hass.io
+            policy sequential
+            health_check 1m
+        }
+```
+
+It's therefore considered an upstream and will receive a healthcheck every 1 minute. This _clearly_ wasn't desired by the devs because they set the fallback healthcheck interval at 5m:
+
+```
+        forward . tls://1.1.1.1 tls://1.0.0.1  {
+            tls_servername cloudflare-dns.com
+            except local.hass.io
+            health_check 5m
+        }
+```
+
+The result is that when conneectivity to Cloudflare fails, an unexpectedly large number of healthchecks fail.
+
