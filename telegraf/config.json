@@ -2,7 +2,7 @@
   "name": "Telegraf DNS Metrics",
   "version": "0.1.1",
   "slug": "telegraf",
-  "description": "Spin up a container running Telegraf to collect telemetry from hassio_dns",
+  "description": "Spin up a container running Telegraf to collect telemetry",
   "url": "https://github.com/bentasker/HomeAssistantAddons/tree/master/telegraf",
   "advanced": true,
   "startup": "services",
@@ -26,7 +26,7 @@
   "host_dbus": false,
   "stdin": false,
   "docker_api": false,
-  "privileged": [],
+  "privileged": ["NET_ADMIN", "SYS_ADMIN", "SYS_RAWIO", "SYS_TIME", "SYS_NICE"],
   "devices": [],
   "map": [
     "config:rw"
