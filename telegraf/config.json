@@ -25,7 +25,7 @@
   "apparmor": false,
   "host_dbus": false,
   "stdin": false,
-  "docker_api": false,
+  "docker_api": true,
   "privileged": ["NET_ADMIN", "SYS_ADMIN", "SYS_RAWIO", "SYS_TIME", "SYS_NICE"],
   "devices": [],
   "map": [
