@@ -140,3 +140,22 @@ It's therefore considered an upstream and will receive a healthcheck every 1 min
 
 The result is that when conneectivity to Cloudflare fails, an unexpectedly large number of healthchecks fail.
 
+----
+
+### Impact of `fallback` section
+
+This is actually worse than first thought.
+
+With the firewall rejecting connections to Cloudflare (i.e. it will actively send a `RST` back), we see a spike to 6000pps from the DNS container, with the rate stabilising down to 3000 junk packets/sec
+
+This is because, at startup, `coredns` sends a query for `.` to the fallback.
+
+If Cloudflare were reachable, this'd result in 2 packets on the network - query and response. However, when it isn't, we instead get this:
+
+![Packet rate and queries](imgs/Screenshot_20211108_195511.png)
+
+This only occurs when the `fallback` statement is present - the presence (or lack of) `127.0.0.1:5553` in the forward statement has no impact on the rate of the storm.
+
+The `fallback` plugin uses the `proxy` plugin under the hood, and it appears that `proxy` will just cycle over it's upstreams trying to elicit a response until it reaches it's own timeout - see [Line 78 of proxy.go](https://github.com/coredns/proxy/blob/master/proxy.go#L78).
+
+Technically the same behaviour occurs when the firewall is configured to drop rather than reject packets - it's just that the storm can't develop nearly as fast because of the time inherently required to hit timeouts (although some caution is needed - `coredns`'s `forward` plugin can dynamically adjust it's timeouts, so I assume `proxy` can too).
