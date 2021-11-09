@@ -43,7 +43,10 @@ So, using my [core-dns-override](https://github.com/bentasker/HomeAssistantAddon
         prometheus 0.0.0.0:9153
         cache 600
     }
+
     
+### Telegraf config
+
 Then, I created my telegraf configuration in `/config/telegraf.conf`
 
     [agent]
