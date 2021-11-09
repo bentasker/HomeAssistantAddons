@@ -81,7 +81,10 @@ Then, I created my telegraf configuration in `/config/telegraf.conf`
     ## An array of urls to scrape metrics from.
     urls = ["http://hassio_dns:9153/metrics"]  
 
-
+    [[inputs.docker]]
+    endpoint = "unix:///var/run/docker.sock"
+    timeout = "5s"
+        
     [[outputs.influxdb]]
     urls = ["http://192.168.3.84:8086"]
     database = "home_assistant_performance"
